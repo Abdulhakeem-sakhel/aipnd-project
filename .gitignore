@@ -24,6 +24,9 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+flowers/
+.vscode/
+checkpoint.pth
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
