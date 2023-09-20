@@ -4,6 +4,8 @@ from torchvision import datasets, transforms, models
 import argparse
 import json
 
+from helper import build_transfer_model, category_names
+
 parser = argparse.ArgumentParser(description='Example with long desc')
 parser.add_argument('data_directory',action='store')
 parser.add_argument('--save_dir',action='store', default='checkpoint.pth')
@@ -55,7 +57,7 @@ train_loaders = torch.utils.data.DataLoader(train_image_datasets, batch_size=32,
 test_loaders = torch.utils.data.DataLoader(test_image_datasets, batch_size=32, shuffle=True)
 test_loaders = torch.utils.data.DataLoader(valid_image_datasets, batch_size=32, shuffle=True)
 
-with open('cat_to_name.json', 'r') as f:
+with open(category_names, 'r') as f:
     cat_to_name = json.load(f)
     
 
@@ -65,17 +67,6 @@ pre_trained_module = models.densenet121
 in_features = 1024 ## ToDO remember to do it automatic based on the module
 number_of_classes = len(cat_to_name)
 
-def build_transfer_model(pre_trained_module, in_features, number_of_classes, hidden_units)->nn.Module:
-    model = pre_trained_module(pretrained=True)
-    for param in model.parameters():
-        param.requires_grad = False    
-    model.classifier = nn.Sequential(nn.Linear(in_features, hidden_units), # type: ignore
-                                    nn.ReLU(),
-                                    nn.Dropout(0.2),
-                                    nn.Linear(hidden_units, number_of_classes),
-                                    nn.LogSoftmax(dim=1))
-    
-    return model
 
 model = build_transfer_model(pre_trained_module, in_features, number_of_classes, arg.hidden_units)
 criterion = nn.NLLLoss()
