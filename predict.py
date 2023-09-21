@@ -22,6 +22,7 @@ device = 'cuda' if torch.cuda.is_available() and arg.gpu else 'cpu'
 
 
 probs, classes = predict(arg.path_to_image, arg.checkpoint,arg.top_k, device)
+probs, classes = probs.squeeze(), classes.squeeze()
 
 print(f'probs: {probs}')
 print(f'classes: {classes}')

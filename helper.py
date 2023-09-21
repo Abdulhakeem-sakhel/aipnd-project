@@ -6,6 +6,31 @@ from PIL import Image
 
 category_names = 'cat_to_name.json'
 
+def setting_up_arch(arch_name) :
+    if arch_name == 'vgg11':
+        return models.vgg11, 25088
+    if arch_name == 'vgg13':
+        return models.vgg13, 25088
+    if arch_name == 'vgg16':
+        return models.vgg16, 25088
+    if arch_name == 'vgg19':
+        return models.vgg19, 25088
+    
+    if arch_name == 'alexnet':
+        return models.alexnet, 9216
+    
+    if arch_name == 'densenet121':
+        return models.densenet121, 1024
+    if arch_name == 'densenet161':
+        return models.densenet161, 2208
+    if arch_name == 'densenet169':
+        return models.densenet169, 1664
+    if arch_name == 'densenet201':
+        return models.densenet201, 1920
+    
+    return None
+    
+
 def build_transfer_model(pre_trained_module_Callable, in_features, number_of_classes, hidden_units)->nn.Module:
     model = pre_trained_module_Callable(pretrained=True)
     for param in model.parameters():
@@ -20,9 +45,7 @@ def build_transfer_model(pre_trained_module_Callable, in_features, number_of_cla
 
 def load_checkpoint(checkpoint_filepath) -> nn.Module:
     checkpoint: dict = torch.load(checkpoint_filepath)
-    pre_trained_module = None
-    if checkpoint['pre_trained_model_name'] == 'densenet121':
-        pre_trained_module = models.densenet121
+    pre_trained_module, _ = setting_up_arch(checkpoint['pre_trained_model_name'])
     model = build_transfer_model(pre_trained_module,
                                  checkpoint['in_features'],
                                  checkpoint['number_of_classes'],
